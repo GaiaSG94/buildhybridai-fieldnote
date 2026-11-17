@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Fieldnote",
+  "version": "0.1.0",
+  "description": "Offline-first field notes: summarize on the device with Firebase AI Logic, sync when back online.",
+  "permissions": ["storage", "unlimitedStorage"],
+  "action": {
+    "default_title": "Fieldnote",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

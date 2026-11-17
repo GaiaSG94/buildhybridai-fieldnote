@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fieldnote</title>
+    <link rel="stylesheet" href="../src/ui/style.css" />
+  </head>
+  <body class="popup">
+    <div class="popup-body">
+      <h1>Fieldnote</h1>
+      <textarea id="note-body" rows="4" placeholder="Field note..."></textarea>
+      <div class="row">
+        <button id="save" type="button" class="primary">Summarize on device</button>
+      </div>
+      <p id="notice" class="notice" hidden></p>
+      <p id="summary" class="note-local"></p>
+    </div>
+    <script type="module" src="../src/extension/popup.ts"></script>
+  </body>
+</html>
