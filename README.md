@@ -17,8 +17,9 @@ device and only sends what is safe to send, when it is safe to send it.
 
 ## How Firebase AI Logic is used
 
-- `getAI(app, { backend: new AgentPlatformBackend('global') })` — Firebase AI
-  Logic is initialized at runtime (`src/firebase.ts`).
+- `getAI(app, { backend: new GoogleAIBackend() })` — Firebase AI
+  Logic is initialized at runtime (`src/firebase.ts`), on the Gemini
+  Developer API free tier (no payment method, no billing).
 - `getGenerativeModel(ai, { mode: InferenceMode.PREFER_ON_DEVICE,
   onDeviceParams, inCloudParams })` — **hybrid inference** (`src/models.ts`):
   the on-device model produces the summary and the translation; the cloud

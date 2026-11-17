@@ -24,10 +24,12 @@ export function loadConfig(): AppConfig {
     storageBucket: env['VITE_FIREBASE_STORAGE_BUCKET'] ?? '',
     messagingSenderId: env['VITE_FIREBASE_MESSAGING_SENDER_ID'] ?? '',
     appId: env['VITE_FIREBASE_APP_ID'] ?? '',
-    backend: env['VITE_AI_BACKEND'] === 'google-ai' ? 'google-ai' : 'agent-platform',
+    // Default: Gemini Developer API (Spark free tier, no payment method).
+    // "agent-platform" (ex-Vertex AI) always requires a Blaze billing account.
+    backend: env['VITE_AI_BACKEND'] === 'agent-platform' ? 'agent-platform' : 'google-ai',
     appcheckSiteKey: env['VITE_APPCHECK_SITE_KEY'] ?? '',
     appcheckDebug: env['VITE_APPCHECK_DEBUG'] === '1',
-    cloudModel: env['VITE_CLOUD_MODEL'] ?? 'gemini-2.5-flash',
+    cloudModel: env['VITE_CLOUD_MODEL'] ?? 'gemini-3.5-flash-lite',
     targetLanguage: env['VITE_TARGET_LANGUAGE'] ?? 'English',
   };
 }
