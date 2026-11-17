@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fieldnote - offline-first field notes with hybrid inference</title>
+    <meta
+      name="description"
+      content="Fieldnote summarizes and translates field notes on the device with Firebase AI Logic, then enriches them in the cloud when the network is back."
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <h1>Fieldnote</h1>
+        <input id="search" type="search" placeholder="Search notes offline" />
+      </header>
+
+      <div id="status" class="statusbar"></div>
+      <p id="notice" class="notice" hidden></p>
+
+      <section class="composer">
+        <form id="note-form">
+          <textarea id="note-body" rows="4" placeholder="Write a field note..."></textarea>
+          <div class="row">
+            <label>
+              Translate into
+              <select id="note-language">
+                <option>English</option>
+                <option>French</option>
+                <option>Spanish</option>
+                <option>Arabic</option>
+              </select>
+            </label>
+            <label class="checkbox">
+              <input id="cloud-toggle" type="checkbox" checked />
+              Enrich in cloud when online
+            </label>
+            <button type="submit" class="primary">Save note</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="feed" class="feed"></section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
