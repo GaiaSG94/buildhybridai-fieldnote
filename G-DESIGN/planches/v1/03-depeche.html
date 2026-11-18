@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fieldnote — 03 Dépêche</title>
+<style>
+  :root {
+    --white: #fbfbf9;
+    --ink: #111315;
+    --ink-2: #4b4f55;
+    --ink-3: #8a8e94;
+    --rule: #e3e3de;
+    --rule-2: #cfcfc8;
+    --local: #1f9d55;
+    --pending: #8792a2;
+    --cloud: #c77d10;
+    --sans: "Seravek", "Gill Sans Nova", "Ubuntu", "Segoe UI", "Calibri", "DejaVu Sans", sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", "Menlo", "DejaVu Sans Mono", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--white); }
+  body { width: 1440px; height: 900px; overflow: hidden; color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.45; padding: 0 56px; }
+
+  nav { height: 56px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--ink); font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; }
+  nav .name { font-family: var(--sans); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  nav .right { display: flex; gap: 28px; align-items: center; color: var(--ink-2); }
+  nav .on::before { content: "●"; color: var(--local); margin-right: 8px; }
+  nav .search { border-bottom: 1px solid var(--ink); padding: 4px 0; width: 260px; color: var(--ink-3); }
+
+  .masthead { display: grid; grid-template-columns: 1fr 420px; align-items: end; padding: 28px 0 22px; border-bottom: 1px solid var(--rule-2); }
+  .masthead h1 { font-size: 56px; line-height: 1; font-weight: 700; letter-spacing: -0.035em; }
+  .masthead h1 span { color: var(--ink-3); font-weight: 400; }
+  .tally { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-left: 1px solid var(--rule-2); }
+  .tally div { padding: 0 0 2px 18px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .tally b { display: block; font-family: var(--sans); font-size: 34px; line-height: 1.1; font-weight: 700; letter-spacing: -0.03em; color: var(--ink); text-transform: none; }
+  .tally .l b::after, .tally .p b::after, .tally .c b::after { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 8px; vertical-align: 6px; }
+  .tally .l b::after { background: var(--local); } .tally .p b::after { background: var(--pending); } .tally .c b::after { background: var(--cloud); }
+
+  .grid { display: grid; grid-template-columns: 72px 1fr 150px 130px 200px; column-gap: 28px; }
+  .colhead { padding: 14px 0 10px; border-bottom: 1px solid var(--rule-2); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+
+  .newline { padding: 16px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .newline .t { font-family: var(--mono); font-size: 12px; color: var(--ink-3); padding-top: 3px; }
+  .newline .draft { font-size: 17px; line-height: 1.45; }
+  .newline .draft i { display: inline-block; width: 2px; height: 19px; background: var(--ink); vertical-align: -3px; animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .newline .ctl { grid-column: 3 / 6; display: flex; gap: 12px; align-items: center; justify-content: flex-end; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+  .newline .ctl span { border: 1px solid var(--rule-2); padding: 5px 9px; }
+  .newline .ctl button { background: var(--ink); color: var(--white); border: 0; font: 600 13px var(--sans); padding: 8px 16px; }
+
+  .entry { padding: 16px 0 18px; border-bottom: 1px solid var(--rule); align-items: start; }
+  .entry .t { font-family: var(--mono); font-size: 13px; color: var(--ink); padding-top: 2px; }
+  .entry .t small { display: block; font-size: 11px; color: var(--ink-3); }
+  .entry h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .entry .orig { font-size: 13.5px; color: var(--ink-2); }
+  .entry .tr { font-size: 13.5px; color: var(--ink); margin-top: 4px; }
+  .entry .tr b { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--ink-3); margin-right: 6px; letter-spacing: 0.06em; }
+  .kw { margin-top: 8px; font-family: var(--mono); font-size: 11.5px; color: var(--cloud); }
+  .kw span { margin-right: 12px; }
+  .kw span::before { content: "#"; opacity: .6; }
+
+  /* latency bars: the hybrid made measurable */
+  .bar { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); padding-top: 3px; }
+  .bar i { display: block; height: 6px; margin-top: 6px; background: var(--rule); position: relative; }
+  .bar i::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--w); background: var(--c); }
+  .bar.dev i { --c: var(--local); }
+  .bar.cld i { --c: var(--cloud); }
+  .bar .none { color: var(--ink-3); }
+
+  .state { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; padding-top: 3px; display: flex; align-items: center; gap: 8px; }
+  .state::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--sc); flex: none; }
+  .state.l { --sc: var(--local); color: var(--local); }
+  .state.p { --sc: var(--pending); color: var(--ink-2); }
+  .state.p::before { animation: pulse 1.4s ease-in-out infinite; }
+  .state.c { --sc: var(--cloud); color: var(--cloud); }
+  @keyframes pulse { 50% { opacity: .25; } }
+  .state small { display: block; color: var(--ink-3); letter-spacing: 0; }
+</style>
+</head>
+<body>
+<nav>
+  <span class="name">Fieldnote</span>
+  <div class="right">
+    <span class="search">Search notes and keywords</span>
+    <span class="on">ONLINE · BACK 0:42</span>
+    <span>QUEUE 3</span>
+  </div>
+</nav>
+
+<header class="masthead">
+  <h1>Wed 18 Nov <span>— 6 notes</span></h1>
+  <div class="tally">
+    <div class="l"><b>2</b>on device</div>
+    <div class="p"><b>1</b>sending</div>
+    <div class="c"><b>3</b>cloud</div>
+  </div>
+</header>
+
+<div class="grid">
+  <div class="colhead">Time</div>
+  <div class="colhead">Note</div>
+  <div class="colhead">On device</div>
+  <div class="colhead">State</div>
+  <div class="colhead">Cloud</div>
+</div>
+
+<div class="grid newline">
+  <div class="t">15:04</div>
+  <div class="draft">Clinic at Mutarara reopened this morning. Two nurses, no fridge for vaccines yet — doses kept in a cool box<i></i></div>
+  <div class="ctl"><span>→ EN</span><span>Enrich in cloud: on</span><button>Save note</button></div>
+</div>
+
+<div class="grid entry">
+  <div class="t">14:52</div>
+  <div>
+    <h3>Km 14 water point dry since Tuesday; 6 km walk to the river.</h3>
+    <p class="orig">O ponto de água do Km 14 está seco desde terça. As mulheres andam 6 km até ao rio, dois bidões por viagem.</p>
+    <p class="tr"><b>EN</b>The water point has been dry since Tuesday. Women walk 6 km to the river, two jerrycans per trip.</p>
+  </div>
+  <div class="bar dev">386 ms<i style="--w:19%"></i></div>
+  <div class="state l">LOCAL<small>in queue · 2nd</small></div>
+  <div class="bar"><span class="none">after sync</span></div>
+</div>
+
+<div class="grid entry">
+  <div class="t">14:37</div>
+  <div>
+    <h3>Bridge lost in Thursday's flood; no trucks crossing since.</h3>
+    <p class="orig">“El puente se cayó con la crecida del jueves. Desde entonces ningún camión pasa.”</p>
+    <p class="tr"><b>EN</b>“The bridge collapsed in Thursday's flood. Since then no truck gets across.”</p>
+  </div>
+  <div class="bar dev">412 ms<i style="--w:21%"></i></div>
+  <div class="state p">PENDING<small>uploading</small></div>
+  <div class="bar"><span class="none">next</span></div>
+</div>
+
+<div class="grid entry">
+  <div class="t">11:48</div>
+  <div>
+    <h3>Maize flour up about 30% in two weeks; traders link it to transport disruption.</h3>
+    <p class="orig">Market prices up again: maize flour 25 kg now 1 450, was 1 100 two weeks ago. Traders blame the road, not the harvest.</p>
+    <div class="kw"><span>maize</span><span>prices</span><span>road-access</span></div>
+  </div>
+  <div class="bar dev">371 ms<i style="--w:18%"></i></div>
+  <div class="state c">CLOUD<small>synced 14:58</small></div>
+  <div class="bar cld">1.8 s<i style="--w:90%"></i></div>
+</div>
+
+<div class="grid entry">
+  <div class="t">09:30</div>
+  <div>
+    <h3>Night convoy held three hours at a checkpoint, cleared at 02:10.</h3>
+    <p class="orig">Night convoy held at checkpoint 3 h, cleared at 02:10.</p>
+    <div class="kw"><span>convoy</span><span>checkpoint</span><span>delay</span></div>
+  </div>
+  <div class="bar dev">355 ms<i style="--w:18%"></i></div>
+  <div class="state c">CLOUD<small>synced 14:58</small></div>
+  <div class="bar cld">2.1 s<i style="--w:100%"></i></div>
+</div>
+
+<div class="grid entry">
+  <div class="t">08:12</div>
+  <div>
+    <h3>63 households registered since Monday, mainly from riverside villages.</h3>
+    <p class="orig">Registration at the camp gate: 63 new households since Monday, most from the river villages.</p>
+    <div class="kw"><span>displacement</span><span>registration</span><span>camp</span></div>
+  </div>
+  <div class="bar dev">390 ms<i style="--w:20%"></i></div>
+  <div class="state c">CLOUD<small>synced 14:57</small></div>
+  <div class="bar cld">1.6 s<i style="--w:80%"></i></div>
+</div>
+</body>
+</html>
