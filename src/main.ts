@@ -12,6 +12,7 @@ import {
   pendingSync,
 } from './core/note';
 import { search } from './core/search';
+import { formatMetrics, summarize, type TimedRun } from './core/metrics';
 import { renderNote, renderStatusBar } from './ui/note-card';
 import type { FieldNote } from './core/types';
 
@@ -23,6 +24,7 @@ export interface UiElements {
   cloudToggle: HTMLInputElement;
   feed: HTMLElement;
   status: HTMLElement;
+  metrics: HTMLElement;
   notice: HTMLElement;
 }
 
@@ -34,6 +36,7 @@ const elements = (): UiElements => ({
   cloudToggle: requireEl('#cloud-toggle'),
   feed: requireEl('#feed'),
   status: requireEl('#status'),
+  metrics: requireEl('#metrics'),
   notice: requireEl('#notice'),
 });
 
@@ -47,6 +50,7 @@ const requireEl = <T extends HTMLElement>(selector: string): T => {
 
 let models: FieldnoteModels | null = null;
 let notes: FieldNote[] = [];
+const runs: TimedRun[] = [];
 
 export function mount(): void {
   const ui = elements();
@@ -83,9 +87,12 @@ const bindCreate = (ui: UiElements, app: Parameters<typeof saveNotes>[0], langua
       try {
         const run = await runLocal(models, note.body, ui.language.value || language);
         notes = [applyLocalEnrichment(note, run), ...notes];
+        runs.push({ source: run.source, latencyMs: run.latencyMs });
         setNotice(ui, `${run.source === 'on_device' ? 'on-device' : 'cloud fallback'} - ${run.latencyMs} ms`);
         if (navigator.onLine && ui.cloudToggle.checked) {
+          const cloudStarted = performance.now();
           const cloud = await runCloud(models, note.body);
+          runs.push({ source: 'in_cloud', latencyMs: Math.round(performance.now() - cloudStarted) });
           notes[0] = applyCloudEnrichment(notes[0], cloud);
         }
         ui.body.value = '';
@@ -134,6 +141,7 @@ function refresh(ui: UiElements): void {
     : byRecency(notes);
   ui.feed.replaceChildren(...visible.map((note) => renderNote(note)));
   ui.status.replaceChildren(renderStatusBar(navigator.onLine, pendingSync(notes).length));
+  ui.metrics.textContent = formatMetrics(summarize(runs));
 }
 
 function setNotice(ui: UiElements, message: string | null): void {
