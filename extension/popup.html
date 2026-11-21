@@ -6,15 +6,25 @@
     <link rel="stylesheet" href="../src/ui/style.css" />
   </head>
   <body class="popup">
-    <div class="popup-body">
-      <h1>Fieldnote</h1>
-      <textarea id="note-body" rows="4" placeholder="Field note..."></textarea>
-      <div class="row">
-        <button id="save" type="button" class="primary">Summarize on device</button>
+    <aside class="pop">
+      <div class="h">
+        <div class="mark"><i></i>Fieldnote</div>
+        <span id="stamp">NEW · —</span>
       </div>
+      <div class="cap">
+        <small>CAPTURED FROM PAGE</small>
+        <textarea id="note-body" rows="3" placeholder="Paste the selection to capture..."></textarea>
+      </div>
+      <div class="row"><span>TRANSLATE <u id="lang">EN</u></span><button id="save" type="button" class="btn">SUMMARIZE ON DEVICE</button></div>
       <p id="notice" class="notice" hidden></p>
-      <p id="summary" class="note-local"></p>
-    </div>
+      <div class="res" id="result" hidden>
+        <div class="k"><b id="source">LOCAL · GEMINI NANO</b><span id="latency">—</span></div>
+        <p id="summary"></p>
+        <p class="t" id="translation"></p>
+        <div class="bar2"><i></i></div>
+      </div>
+      <div class="foot" id="foot">LOADING THE NOTEBOOK…</div>
+    </aside>
     <script type="module" src="../src/extension/popup.ts"></script>
   </body>
 </html>
