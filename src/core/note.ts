@@ -13,24 +13,27 @@ export function createNote(draft: NoteDraft): FieldNote {
 /** Attach the on-device summary and translation to a note. */
 export function applyLocalEnrichment(
   note: FieldNote,
-  enrichment: { summary?: string; translation?: string },
+  enrichment: { summary?: string; translation?: string; language?: string; latencyMs?: number },
 ): FieldNote {
   return {
     ...note,
     localSummary: enrichment.summary ?? note.localSummary,
     localTranslation: enrichment.translation ?? note.localTranslation,
+    translationLanguage: enrichment.language ?? note.translationLanguage,
+    localLatencyMs: enrichment.latencyMs ?? note.localLatencyMs,
   };
 }
 
 /** Attach the cloud enrichment to a note. */
 export function applyCloudEnrichment(
   note: FieldNote,
-  enrichment: { summary?: string; keywords?: string[] },
+  enrichment: { summary?: string; keywords?: string[]; latencyMs?: number },
 ): FieldNote {
   return {
     ...note,
     cloudSummary: enrichment.summary ?? note.cloudSummary,
     cloudKeywords: enrichment.keywords ?? note.cloudKeywords,
+    cloudLatencyMs: enrichment.latencyMs ?? note.cloudLatencyMs,
   };
 }
 

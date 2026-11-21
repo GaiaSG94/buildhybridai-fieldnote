@@ -8,9 +8,15 @@ export interface FieldNote {
   localSummary?: string;
   /** Translation produced on the device. */
   localTranslation?: string;
+  /** Language requested for the on-device translation. */
+  translationLanguage?: string;
   /** Cloud enrichment: keywords and a fuller summary. */
   cloudKeywords?: string[];
   cloudSummary?: string;
+  /** Latency of the on-device pass, as measured when it ran. */
+  localLatencyMs?: number;
+  /** Latency of the cloud enrichment, once it ran. */
+  cloudLatencyMs?: number;
   /** True once the note has been pushed to Firestore. */
   synced: boolean;
 }
