@@ -9,10 +9,22 @@ import { saveNotes } from '../store/notes';
 const body = document.querySelector<HTMLTextAreaElement>('#note-body');
 const saveButton = document.querySelector<HTMLButtonElement>('#save');
 const notice = document.querySelector<HTMLElement>('#notice');
+const result = document.querySelector<HTMLElement>('#result');
+const source = document.querySelector<HTMLElement>('#source');
+const latency = document.querySelector<HTMLElement>('#latency');
 const summary = document.querySelector<HTMLElement>('#summary');
+const translation = document.querySelector<HTMLElement>('#translation');
+const foot = document.querySelector<HTMLElement>('#foot');
+const stamp = document.querySelector<HTMLElement>('#stamp');
 
 const config = loadConfig();
 const bundle = initFirebase(config);
+
+const clock = (): string => {
+  const d = new Date();
+  const pad = (v: number) => String(v).padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 const show = (message: string | null): void => {
   if (!notice) {
@@ -21,6 +33,12 @@ const show = (message: string | null): void => {
   notice.textContent = message ?? '';
   notice.hidden = !message;
 };
+
+if (foot) {
+  foot.textContent = navigator.onLine
+    ? 'ONLINE · SAVED AND SENT TO THE SYNC QUEUE'
+    : 'OFFLINE · KEPT ON THE DEVICE, SYNC LATER';
+}
 
 saveButton?.addEventListener('click', () => {
   void (async () => {
@@ -37,15 +55,19 @@ saveButton?.addEventListener('click', () => {
     saveButton.disabled = true;
     try {
       const run = await runLocal(models, note.body, config.targetLanguage);
-      if (summary) {
-        summary.textContent = `${run.source === 'on_device' ? 'LOCAL' : 'CLOUD'} — ${run.summary}`;
+      if (stamp) stamp.textContent = `NEW · ${clock()}`;
+      if (result && source && latency && summary && translation) {
+        result.hidden = false;
+        source.textContent = run.source === 'on_device' ? 'LOCAL · GEMINI NANO' : 'CLOUD · GEMINI';
+        latency.textContent = `${run.latencyMs} MS`;
+        summary.textContent = run.summary ?? '';
+        translation.textContent = run.translation ? `→ ${run.translation}` : '';
       }
-      show(`${run.latencyMs} ms`);
       if (navigator.onLine) {
         await saveNotes(bundle.app, [note]);
-        show(`${run.latencyMs} ms â€” synced`);
+        show(`${run.latencyMs} ms — synced`);
       } else {
-        show(`${run.latencyMs} ms â€” kept offline, sync later from the web app`);
+        show(`${run.latencyMs} ms — kept offline, sync later from the web app`);
       }
     } catch (error) {
       show(error instanceof Error ? error.message : String(error));

@@ -94,6 +94,16 @@ tests/             vitest unit tests (no network)
 - The extension currently syncs only when the device is online; the offline
   queue lives in the web app session.
 
+## Interface and typefaces
+
+The interface follows the locked "Orbite" design (`G-DESIGN/STYLE.md`): a
+night scene rendered by a dedicated WebGL shader, notes drawn as rocks in
+orbit (red embers = local, frost = cloud), and a monospaced HUD. Two free
+(SIL OFL) typefaces are embedded in `src/ui/fonts/`:
+
+- [Archivo](https://fonts.google.com/specimen/Archivo) (variable) — titles and body text.
+- [DM Mono](https://fonts.google.com/specimen/DM+Mono) — HUD, labels, measurements.
+
 ## Built with
 
 TypeScript, Vite, vitest, Firebase (AI Logic, App Check, Firestore, Remote
@@ -101,12 +111,9 @@ Config), Chrome Extension Manifest V3.
 
 ## Measurements
 
-The line under the toolbar is computed from the runs that actually happened
-(`src/core/metrics.ts`): how many inferences ran, how many of them ran on the
-device, the median device latency, the median cloud latency, and the share of
-runs that stayed on the device. These are the numbers quoted in the demo and in
-the submission — nothing is hard-coded, nothing is estimated.
-
-```text
-Measurements: 5 run(s) - 3 local - 2 cloud - median local 184 ms - median cloud 1.29 s - 60% of runs computed on device
-```
+Every measured latency is shown where it happened, following the locked
+design: the on-device pass is printed on each note label and in the queue
+table ("402 ms"), the cloud latency appears once a note has been enriched
+("1.8 s"), and the readout panel quotes them per note. Nothing is
+hard-coded, nothing is estimated; aggregate helpers live in
+`src/core/metrics.ts` (`summarize` → run counts, medians, on-device share).

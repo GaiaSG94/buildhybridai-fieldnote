@@ -129,3 +129,64 @@ Je recommande **03 Dépêche** : c'est la seule où la différence entre local e
 ### Changelog
 
 - 2026-11-18 : `PAGES.md`, `REFS.md`, `DESIGN.md` créés ; trois planches V1 de la page Notes.
+
+---
+
+## opencode - Revue d'implémentation (07b, 2026-11-21)
+
+Style « Orbite » verrouillé porté dans le produit réel (web app + popup
+extension). Moteur de scène raymarché porté 1:1 depuis les planches
+(`src/ui/scene.ts`), HUD réticule/étiquettes/orbites réimplémenté à
+l'identique (`src/ui/hud.ts`), tokens et typo exacts (`src/ui/style.css`,
+Archivo + DM Mono embarquées OFL dans `src/ui/fonts/`). Captures côte à côte
+1440×900 dans `G-DESIGN/revue/compare-01..05.png` (planche à gauche,
+produit à droite, données de démo chargées).
+
+### Écrans (5/5)
+
+| Page | Planche | Produit | État |
+|---|---|---|---|
+| 01 Notes | `planches/orbite/01-notes.html` | `#01` — scène, réticule sur la note SENDING, readout, composeur réel | fait |
+| 02 Extension | `planches/orbite/02-extension.html` | `#02` — fenêtre navigateur + popup, vitrine du vrai popup MV3 (restylé) | fait |
+| 03 Sync queue | `planches/orbite/03-file.html` | `#03` — table file ancien→récent + pipeline device→Firestore→cloud | fait |
+| 04 Search | `planches/orbite/04-recherche.html` | `#04` — vraie recherche (score n/n termes, provenance par terme) | fait |
+| 05 Offline | `planches/orbite/05-hors-ligne.html` | `#05` — faisceau éteint, cloud endormi, bannière, latences | fait |
+
+### Données ajoutées au modèle (le design les affiche)
+
+- `localLatencyMs` / `cloudLatencyMs` / `translationLanguage` sur la note :
+  le design montre la latence sur chaque étiquette, dans le readout et dans
+  la table — le modèle V1 ne les conservait pas.
+- Provenance de recherche (`tokenOrigins`) : la planche 04 affiche
+  « terme · NOTE TEXT / ON-DEVICE SUMMARY / CLOUD KEYWORD » — le moteur
+  d'index ne distinguait pas les champs.
+- Jeu de notes de démo (`src/demo.ts`) affiché uniquement quand Firebase
+  n'est pas configuré (annonce « SAMPLE DATA » sous la scène) ; sert aussi
+  de démo hébergée en attendant le projet Firebase commun (point ouvert H).
+
+### Écarts volontaires (contraintes réelles, soumis à Gaia)
+
+1. **Horloge du cadre** : la planche écrit « BACK 0:42 » (depuis combien de
+   temps le réseau est revenu) — le produit ne mesure pas cet instant ;
+   affiché sans ce segment (pas de donnée inventée).
+2. **Page 05 hors-ligne** : rendue telle que dessinée (faisceau éteint,
+   cloud endormi) quel que soit l'état réel du réseau — c'est l'écran de
+   démonstration du mode ; l'état réel reste la pastille ONLINE/OFFLINE du
+   cadre et le composeur (CLOUD WHEN ONLINE). À trancher si tu préfères un
+   écran qui reflète `navigator.onLine`.
+3. **Page 02** : le popup de la vitrine est statique (même contenu que la
+   planche) ; le vrai popup MV3 installable (chargé depuis `dist-extension`)
+   est interactif et restylé à l'identique.
+4. **File > 4 notes** : la scène est limitée à 8 roches (moteur des planches)
+   ; la table de la page 03 liste tout, la scène garde les plus récentes.
+5. **Compteurs du cadre** : mêmes gabarits que les planches, alimentés par
+   les vraies valeurs (IN ORBIT / SYNCED, IN QUEUE, MATCH, WAITING/ASLEEP).
+
+### Contrôles
+
+- 32/32 tests vitest (dont 8 nouveaux : rang d'affichage, états, placement
+  des roches, latences sur étiquettes, provenance de recherche), tsc vert,
+  double build vert, `check-limits` 0, garde secrets OK.
+- Capture : build servi en local + Chrome headless 1440×900 ; la scène et le
+  HUD sont vérifiés par pixels (accents rouge `#ff4b3a` et glacé `#cfe6ff`
+  présents sur les 5 pages).

@@ -41,3 +41,27 @@ export function search(notes: FieldNote[], query: string, limit = 10): SearchHit
   }
   return hits.sort((a, b) => b.score - a.score).slice(0, limit);
 }
+
+export type TokenOrigin = 'text' | 'local' | 'cloud_summary' | 'keyword';
+
+const contains = (text: string, token: string): boolean => new Set(tokenize(text)).has(token);
+
+/**
+ * Where each matched term was found (note text, on-device summary,
+ * cloud summary or cloud keyword) - provenance shown by the search HUD.
+ */
+export function tokenOrigins(note: FieldNote, tokens: string[]): Map<string, TokenOrigin[]> {
+  const origins = new Map<string, TokenOrigin[]>();
+  const add = (token: string, origin: TokenOrigin): void => {
+    const found = origins.get(token) ?? [];
+    found.push(origin);
+    origins.set(token, found);
+  };
+  for (const token of tokens) {
+    if (contains(note.body, token)) add(token, 'text');
+    if (contains(note.localSummary ?? '', token)) add(token, 'local');
+    if (contains(note.cloudSummary ?? '', token)) add(token, 'cloud_summary');
+    if ((note.cloudKeywords ?? []).some((keyword) => contains(keyword, token))) add(token, 'keyword');
+  }
+  return origins;
+}
